@@ -1,0 +1,16 @@
+{
+  "name": "williamgb/songbird-jsonable",
+  "description": "Allow content to be served as json in Songbird",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "William Grant-Buckley",
+      "email": "william@wcodist.uk"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Songbird\\Package\\Jsonable\\": "src/"
+    }
+  }
+}
