@@ -1,12 +1,13 @@
 <?php
 namespace Songbird\Package\Jsonable;
 
+use Illuminate\Support\Collection;
 use League\Route\Http\Exception\NotFoundException;
-use Songbird\Controller as BaseController;
+use Songbird\Handler as BaseController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class Controller extends BaseController
+class Handler extends BaseController
 {
     /**
      * @param \Symfony\Component\HttpFoundation\Request  $request
@@ -16,29 +17,27 @@ class Controller extends BaseController
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws \League\Route\Http\Exception\NotFoundException
      */
-    public function handle(Request $request, Response $response, array $args)
+    public function __invoke(Request $request, Response $response, array $args)
     {
-        $document = $this->getDocument($args['documentId']);
+        $content = $this->getFileContent($args['fileId']);
 
-        if (!isset($document['jsonable']) || !$document['jsonable']) {
+        if (!isset($content['jsonable']) || !$content['jsonable']) {
             throw new NotFoundException();
         }
 
-        $this->emit('PrepareDocument', ['document' => &$document]);
-
         $response->headers->set('Content-Type', 'application/json');
-        $response->setContent($this->transformToJson($document));
+        $response->setContent($this->transformToJson($content));
 
         return $response;
     }
 
     /**
-     * @param mixed $document
+     * @param mixed $content
      *
      * @return mixed
      */
-    public function transformToJson($document)
+    public function transformToJson($content)
     {
-        return $this->resolve('Repository.Content')->make($document)->toJson();
+        return Collection::make($content)->toJson();
     }
 }
